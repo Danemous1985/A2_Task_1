@@ -6,8 +6,18 @@ This project is a cloud-based music subscription service built using **AWS Dynam
 
 1. Clone the repository using Git.
 2. Install the required dependencies.
-3. Configure AWS credentials.
-4. Run the application.
+3. Configure AWS credentials. Need to do this as had some trouble with running scripts.
+   In the AWS CLI:
+   aws configure
+   Example:
+   AWS Access Key ID [None]: ASIASSPVW4E4NRSCHGDX
+   AWS Secret Access Key [None]: eW1v9iFIfcrE83gR1aFhzBTcCN639xYcS/4Z9TMt
+   Default region name [None]: us-east-1
+   Default output format [None]: json
+   
+   export AWS_SESSION_TOKEN="SESSION_TOKEN"
+
+5. Run the application.
 
 ## File Structure
 (some are not implemented yet)
