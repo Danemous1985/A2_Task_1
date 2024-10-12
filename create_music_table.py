@@ -1,6 +1,9 @@
+"""
+Here I make this script to create music table. I wanted to try make this one programmatically. It seems worked well in my attempt. Took some time though.
+"""
 import boto3
 
-# Initialize DynamoDB
+# initialize DynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 def create_music_table():
@@ -9,29 +12,29 @@ def create_music_table():
         KeySchema=[
             {
                 'AttributeName': 'title',
-                # Partition key
+                # partition key
                 'KeyType': 'HASH'
             },
             {
                 'AttributeName': 'artist',
-                # Sort Key
+                # sort Key
                 'KeyType': 'RANGE'
             }
         ],
         AttributeDefinitions=[
             {
                 'AttributeName': 'title',
-                # String
+                # string
                 'AttributeType': 'S'
             },
             {
                 'AttributeName': 'artist',
-                # String
+                # string
                 'AttributeType': 'S'  
             },
             {
                 'AttributeName': 'year',
-                # String for secondary index
+                # string for secondary index
                 'AttributeType': 'S'  
             }
         ],
@@ -41,12 +44,12 @@ def create_music_table():
                 'KeySchema': [
                     {
                         'AttributeName': 'year',
-                        # Partition key for the index
+                        # partition key for the index
                         'KeyType': 'HASH'  
                     }
                 ],
                 'Projection': {
-                # Retrieve all attributes
+                # retrieve all attributes
                     'ProjectionType': 'ALL'  
                 },
                 'ProvisionedThroughput': {
@@ -63,5 +66,5 @@ def create_music_table():
     table.meta.client.get_waiter('table_exists').wait(TableName='music')
     print("Music table created with title, artist, and year-index. for querying later")
 
-# Run the function
+# call function here
 create_music_table()

@@ -1,10 +1,10 @@
 import boto3
 
-# Initialize DynamoDB resource
+# initialize dynamoDB
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 """
-Function to add users to the login table
+Function to add users to the login table. Just made some names for initial database of users.
 """
 def add_users():
     table = dynamodb.Table('login')
@@ -26,5 +26,5 @@ def add_users():
         table.put_item(Item=user)
         print(f"Added {user['user_name']}")
 
-# Run the function
+# call function
 add_users()

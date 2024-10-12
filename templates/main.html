@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Welcome, {{ user_name }}!</h1>
+        <p class="page-subtitle">This is the main dashboard for your music subscription.</p>
+        
+        {% if subscribed_music %}
+            <h2 class="page-title">Your Subscribed Music</h2>
+            <ul class="music-list">
+                {% for music in subscribed_music %}
+                    <li class="music-item">
+                        <h3>{{ music.title }} by {{ music.artist }} ({{ music.year }})</h3>
+                        <img src="{{ music.artist_image_url }}" alt="{{ music.artist }}'s image" width="200px" class="artist-image">
+                        <form action="{{ url_for('remove_music', music_id=music.music_id) }}" method="POST">
+                            <button type="submit" class="logout-btn remove-btn">Remove</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No music subscriptions found.</p>
+        {% endif %}
+
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

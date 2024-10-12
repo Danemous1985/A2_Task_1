@@ -3,7 +3,7 @@ import json
 import requests
 import os
 
-# Initialize DynamoDB and S3
+# initialize DynamoDB and S3
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 s3 = boto3.client('s3')
 
