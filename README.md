@@ -20,13 +20,13 @@ In the AWS CLI:
    aws_session_token=  
    Also need to add it in app.py
      
-   dynamodb = boto3.resource(
-    'dynamodb',
-    region_name='us-east-1',
-    aws_access_key_id='',
-    aws_secret_access_key='',
-    aws_session_token=''  
-   )
+   dynamodb = boto3.resource(  
+    'dynamodb',  
+    region_name='us-east-1',  
+    aws_access_key_id='',  
+    aws_secret_access_key='',  
+    aws_session_token=''    
+   )  
 
    s3 = boto3.client(  
    's3',  
