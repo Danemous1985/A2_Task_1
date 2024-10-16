@@ -7,7 +7,8 @@ body {
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    overflow-y: auto;
 }
 
 /* main container styling */
@@ -18,6 +19,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     width: 400px;
     text-align: center;
+    margin-top: 20px;
 }
 
 /* page title */
@@ -71,3 +73,60 @@ button.logout-btn:hover {
     background-color: red;
     width: 100%;
 }
+
+/* query container styling */
+.query-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+button.query-btn {
+    padding: 10px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button.query-btn:hover {
+    background-color: #8c43ff;
+}
+
+/* subscribe button styling */
+.subscribe-btn {
+    background-color: #008cba;
+    width: 100%;
+}
+
+.subscribe-btn:hover {
+    background-color: #005f6b;
+}
+
+/* home button styling */
+button.home-btn {
+    padding: 10px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+button.home-btn:hover {
+    background-color: #8c43ff;
+}
+

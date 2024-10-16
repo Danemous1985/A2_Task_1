@@ -1,5 +1,5 @@
 """
-Here I make this script to create music table. I wanted to try make this one programmatically. It seems worked well in my attempt. Took some time though.
+Here I make this script to create music table. I wanted to try make this one programmatically. It seems worked well in my attempt. Took some time though. This is new for me. I tried sometihng else but didnt work so went back to what was functioning.
 """
 import boto3
 
@@ -44,7 +44,7 @@ def create_music_table():
                 'KeySchema': [
                     {
                         'AttributeName': 'year',
-                        # partition key for the index
+                        # partition key for index
                         'KeyType': 'HASH'  
                     }
                 ],

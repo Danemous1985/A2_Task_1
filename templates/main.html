@@ -18,7 +18,7 @@
                     <li class="music-item">
                         <h3>{{ music.title }} by {{ music.artist }} ({{ music.year }})</h3>
                         <img src="{{ music.artist_image_url }}" alt="{{ music.artist }}'s image" width="200px" class="artist-image">
-                        <form action="{{ url_for('remove_music', music_id=music.music_id) }}" method="POST">
+                        <form action="{{ url_for('remove_music', music_id=music.title) }}" method="POST">
                             <button type="submit" class="logout-btn remove-btn">Remove</button>
                         </form>
                     </li>
@@ -28,8 +28,41 @@
             <p>No music subscriptions found.</p>
         {% endif %}
 
+        <!-- query area -->
+        <div class="query-container">
+            <h2 class="page-title">Query Music</h2>
+            <form action="{{ url_for('query_music') }}" method="POST">
+                <input type="text" name="title" placeholder="Enter Title">
+                <input type="text" name="artist" placeholder="Enter Artist">
+                <input type="text" name="year" placeholder="Enter Year">
+                <button type="submit" class="query-btn">Query</button>
+            </form>
+        </div>
+
+        <!-- show query results -->
+        {% if query_results %}
+            <h2 class="page-title">Query Results</h2>
+            <ul class="music-list">
+                {% for result in query_results %}
+                    <li class="music-item">
+                        <h3>{{ result.title }} by {{ result.artist }} ({{ result.year }})</h3>
+                        <img src="{{ result.artist_image_url }}" alt="{{ result.artist }}'s image" width="200px" class="artist-image">
+                        <form action="{{ url_for('subscribe_music', music_id=result.title, artist=result.artist) }}" method="POST">
+                            <button type="submit" class="logout-btn subscribe-btn">Subscribe</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- logout button -->
         <form action="{{ url_for('logout') }}" method="post">
             <button type="submit" class="logout-btn">Logout</button>
+        </form>
+
+        <!-- home button -->
+        <form action="{{ url_for('main_page') }}" method="get">
+            <button type="submit" class="logout-btn home-btn">Home</button>
         </form>
     </div>
 </body>

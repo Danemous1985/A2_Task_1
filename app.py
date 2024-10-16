@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import boto3
+from boto3.dynamodb.conditions import Attr
 
 app = Flask(__name__)
 app.secret_key = 'my_key'
@@ -11,18 +12,19 @@ The credentials below are temporary. I'm having some issue with credentials. Hav
 dynamodb = boto3.resource(
     'dynamodb',
     region_name='us-east-1',
-    aws_access_key_id='ASIASSPVW4E4E3ZL4QE7',
-    aws_secret_access_key='BiltZLny2hFvvg41n3xL6LcgcMpaAexhT6SUWMe0',
-    aws_session_token='IQoJb3JpZ2luX2VjEE4aCXVzLXdlc3QtMiJHMEUCIQCrpDGC85OVIubbM8wsXsNm6gYw7Hvosm53QA/KjYDXqAIgQ9wO3hWLRT8GaIY66E6Ep5FsILu5XokYZXk0VETD5cIqrwIIp///////////ARAAGgwxNzcxNDU4MzE3MzYiDFRLe+JJzJshC9CZLCqDAusl5l2mfxqyrdjhuRrD1G7B1hdBYXLOmW3HiNp7BvuKkwPXcfWWKcSYy9wu97rVM3LntMudSSsidQman2a3yh3qecLsWsEeC8j7OZdw6u2LqTldrTtNq8O55ifuYAagYJtq5/s/sw97gr8MgALNVS8SDce9WR9eMqorf/qf+O0oR/qH3TJ5OTqLzjzeEgD+8GyggYIZmLCSkvDKb8lmP0Bu0KMjy+r8D9aYY4Vc+VTDgIgp499tF4RXVxVYZOZu6F0ezSXuQ3G3nPL57x7LpVOypiKLdIal3gWf3Jcmw+aJGTWieT9WC6LJqpIFMXUhJFHf1asqCfYa7IMhXQ8MO4vHS78w7IOquAY6nQH/oDS4y9GpLwb4glUQCxCoP5uZuwyG7Zrt7yyRMgCq/5ahuFA0wZhdhVnHcr0fl9RdOWpiRidFFrN2pkIyHBxS9SFEhg95QJ5UpVSSaIXj3ukULN3tMAtuXgUp/jy/p7k4O+shdl9THMJOS6q+5pJrrTV/h3wOFeY3nDwadmYjf7Y4W7RZ+ByXehELsD9p6CJs0x3J3kSvaAfbwzw8'
+    aws_access_key_id='ASIASSPVW4E4PBJYURYQ',
+    aws_secret_access_key='CnueBha8Vc2n946wymnn6Xt2r1GuO8a/QWLjvXTO',
+    aws_session_token='IQoJb3JpZ2luX2VjEK///////////wEaCXVzLXdlc3QtMiJGMEQCIHZfTVDSVK8Q8XjIDnid+NgKIlRUPr6viyvK2zsY3rmHAiBC6mjJ2kToLZK3u/fxXf7S1A/IftCgJgxxOCj7JMStgCqmAggXEAAaDDE3NzE0NTgzMTczNiIMVQT/Vx4JEB4Yb9C+KoMC1mUJt/ciOgvAAdD9F9TMKLx1/j/YDl7L/b0WMjo5q6DntP9vm4BKRYF34I3eoI652xNpC4EsUhQRD4ec/BGpHd6cd1n+JTm6IcS5iOO5xvmxNFmhsPRHg4FuMnj9tIcIHdTY2ZmgxpnE4MWCjtCw1nb7oqzBiReFFxiPs0+MmNmxsYKL0l42IhVEmCFCEePOLvosRL7hgjMRVt+ZQuO1zSdCrix0Vw7Y9ULIX8faYzEOZKupTXWjJH4SfwdiZ66lD4F3zQtTR0/DUis5PS0JoeGTZOEC6eGYyeiwq4lODYxmNGGhsP+KxHqIuWsuMxeMkPxDhmcWH3FNt4ksqxpSLR68FzDBlr+4BjqeATNzCD5pq8yqJ36lbmEnIalNuQFI1JGfgd+bd0uNG82StbAOuokI/M6eNkSG54+e+sON/QB/xiFLP3AQ6fib0dBOexBICVfXX4EoVIjeHiNIdQ2L5OlJWCVIy8eDKi/8AhM2XHBGAGFTEeoCP/Yicxf4XDKtHvvMvFJSOgaG3Bijn2Licxwv5dVMR/cQCSwOmSyPa3ATlnWtQ+C/LyTu'
 )
 
 s3 = boto3.client(
     's3',
     region_name='us-east-1',
-    aws_access_key_id='ASIASSPVW4E4E3ZL4QE7',
-    aws_secret_access_key='BiltZLny2hFvvg41n3xL6LcgcMpaAexhT6SUWMe0',
-    aws_session_token='IQoJb3JpZ2luX2VjEE4aCXVzLXdlc3QtMiJHMEUCIQCrpDGC85OVIubbM8wsXsNm6gYw7Hvosm53QA/KjYDXqAIgQ9wO3hWLRT8GaIY66E6Ep5FsILu5XokYZXk0VETD5cIqrwIIp///////////ARAAGgwxNzcxNDU4MzE3MzYiDFRLe+JJzJshC9CZLCqDAusl5l2mfxqyrdjhuRrD1G7B1hdBYXLOmW3HiNp7BvuKkwPXcfWWKcSYy9wu97rVM3LntMudSSsidQman2a3yh3qecLsWsEeC8j7OZdw6u2LqTldrTtNq8O55ifuYAagYJtq5/s/sw97gr8MgALNVS8SDce9WR9eMqorf/qf+O0oR/qH3TJ5OTqLzjzeEgD+8GyggYIZmLCSkvDKb8lmP0Bu0KMjy+r8D9aYY4Vc+VTDgIgp499tF4RXVxVYZOZu6F0ezSXuQ3G3nPL57x7LpVOypiKLdIal3gWf3Jcmw+aJGTWieT9WC6LJqpIFMXUhJFHf1asqCfYa7IMhXQ8MO4vHS78w7IOquAY6nQH/oDS4y9GpLwb4glUQCxCoP5uZuwyG7Zrt7yyRMgCq/5ahuFA0wZhdhVnHcr0fl9RdOWpiRidFFrN2pkIyHBxS9SFEhg95QJ5UpVSSaIXj3ukULN3tMAtuXgUp/jy/p7k4O+shdl9THMJOS6q+5pJrrTV/h3wOFeY3nDwadmYjf7Y4W7RZ+ByXehELsD9p6CJs0x3J3kSvaAfbwzw8'
+    aws_access_key_id='ASIASSPVW4E4PBJYURYQ',
+    aws_secret_access_key='CnueBha8Vc2n946wymnn6Xt2r1GuO8a/QWLjvXTO',
+    aws_session_token='IQoJb3JpZ2luX2VjEK///////////wEaCXVzLXdlc3QtMiJGMEQCIHZfTVDSVK8Q8XjIDnid+NgKIlRUPr6viyvK2zsY3rmHAiBC6mjJ2kToLZK3u/fxXf7S1A/IftCgJgxxOCj7JMStgCqmAggXEAAaDDE3NzE0NTgzMTczNiIMVQT/Vx4JEB4Yb9C+KoMC1mUJt/ciOgvAAdD9F9TMKLx1/j/YDl7L/b0WMjo5q6DntP9vm4BKRYF34I3eoI652xNpC4EsUhQRD4ec/BGpHd6cd1n+JTm6IcS5iOO5xvmxNFmhsPRHg4FuMnj9tIcIHdTY2ZmgxpnE4MWCjtCw1nb7oqzBiReFFxiPs0+MmNmxsYKL0l42IhVEmCFCEePOLvosRL7hgjMRVt+ZQuO1zSdCrix0Vw7Y9ULIX8faYzEOZKupTXWjJH4SfwdiZ66lD4F3zQtTR0/DUis5PS0JoeGTZOEC6eGYyeiwq4lODYxmNGGhsP+KxHqIuWsuMxeMkPxDhmcWH3FNt4ksqxpSLR68FzDBlr+4BjqeATNzCD5pq8yqJ36lbmEnIalNuQFI1JGfgd+bd0uNG82StbAOuokI/M6eNkSG54+e+sON/QB/xiFLP3AQ6fib0dBOexBICVfXX4EoVIjeHiNIdQ2L5OlJWCVIy8eDKi/8AhM2XHBGAGFTEeoCP/Yicxf4XDKtHvvMvFJSOgaG3Bijn2Licxwv5dVMR/cQCSwOmSyPa3ATlnWtQ+C/LyTu'
 )
+
 
 # s3 = boto3.client('s3', region_name='us-east-1')
 
@@ -52,7 +54,7 @@ def register():
         response = login_table.get_item(Key={'email': email})
         
         if 'Item' in response:
-            error = "The email is already registered."
+            error = "The email already exists"
             return render_template('register.html', error=error)
 
         # store new user in the DynamoDB table
@@ -77,17 +79,18 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        # retrieve the user from DynamoDB based on email
+        # retrieve the user from dynamoDB based on email
         response = login_table.get_item(Key={'email': email})
 
         if 'Item' in response:
             user = response['Item']
             if user['password'] == password:
                 session['email'] = user['email']
-                session['user_name'] = user['user_name']  # Store user name in session
+                  # store user name in session
+                session['user_name'] = user['user_name']
                 return redirect(url_for('main_page'))
             else:
-                error = "Invalid credentials"
+                error = "email or password invalid"
                 return render_template('index.html', error=error)
         else:
             error = "User not found"
@@ -132,7 +135,7 @@ def main_page():
             if 'Item' in music_response:
                 music_data = music_response['Item']
                 
-                # Get the artist image from S3 bucket
+                # get artist image from S3 bucket
                 artist_image_key = music_data.get('img_url')
                 artist_image_url = s3.generate_presigned_url(
                     'get_object',
@@ -152,14 +155,93 @@ def main_page():
 # remove subscription for the user
 @app.route('/remove_music/<music_id>', methods=['POST'])
 def remove_music(music_id):
+    if 'email' in session:
+        user_email = session['email']
+        try:
+            subscriptions_table.delete_item(
+                Key={
+                    'email': user_email,
+                    'music_id': music_id
+                }
+            )
+        except Exception as e:
+            print(f"Error while removing: {e}")
+
+        return redirect(url_for('main_page'))
+    
+    return redirect(url_for('index'))
+
+
+
+
+@app.route('/query_music', methods=['POST'])
+def query_music():
+    # get username from the session
+    user_name = session.get('user_name', 'User')
+
+    title = request.form.get('title')
+    artist = request.form.get('artist')
+    year = request.form.get('year')
+
+    filter_expression = None
+
+    # construct the filter expression for query. This worked better
+    if title:
+        filter_expression = Attr('title').contains(title)
+    
+    if artist:
+        if filter_expression:
+            filter_expression = filter_expression & Attr('artist').contains(artist)
+        else:
+            filter_expression = Attr('artist').contains(artist)
+
+    if year:
+        if filter_expression:
+            filter_expression = filter_expression & Attr('year').contains(year)
+        else:
+            filter_expression = Attr('year').contains(year)
+
+    # return an empty result set if nothing provided
+    if not filter_expression:
+        return render_template('main.html', query_results=[], user_name=user_name)
+
+    # now query music table using filter expression
+    query_response = music_table.scan(FilterExpression=filter_expression)
+    query_results = query_response.get('Items', [])
+
+    # for every result generate the URL for the artist image from S3 bucket
+    for result in query_results:
+        artist_image_key = result.get('img_url')
+        artist_image_url = s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': 'task1musicimages', 'Key': artist_image_key},
+            ExpiresIn=3600
+        )
+        result['artist_image_url'] = artist_image_url
+
+    # render main page with query results and user name
+    return render_template('main.html', query_results=query_results, user_name=user_name)
+
+
+
+@app.route('/subscribe_music/<music_id>/<artist>', methods=['POST'])
+def subscribe_music(music_id, artist):
     user_email = session['email']
-    subscriptions_table.delete_item(
-        Key={
-            'email': user_email,
-            'music_id': music_id
-        }
-    )
+
+    # add subscription to dynamoDB table
+    try:
+        subscriptions_table.put_item(
+            Item={
+                'email': user_email,
+                'music_id': music_id,
+                'artist': artist
+            }
+        )
+    except Exception as e:
+        print(f"Error while subscribing: {e}")
+
     return redirect(url_for('main_page'))
+
 
 
 if __name__ == '__main__':
