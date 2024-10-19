@@ -20,25 +20,9 @@ In the AWS CLI:
    [default]  
    aws_access_key_id=  
    aws_secret_access_key=  
-   aws_session_token=  
-   Also need to add it in app.py
+   aws_session_token=        
      
-   dynamodb = boto3.resource(  
-    'dynamodb',  
-    region_name='us-east-1',  
-    aws_access_key_id='',  
-    aws_secret_access_key='',  
-    aws_session_token=''    
-   )  
-
-   s3 = boto3.client(  
-   's3',  
-   region_name='us-east-1',  
-   aws_access_key_id='',  
-   aws_secret_access_key='',  
-   aws_session_token=''  
-     
-5. Transfer app.py through FileZilla for new credentials then run the application through EC2 DNS address.
+4. Run the application through EC2 DNS address.
 
 ## File Structure
 NOTE: login.html is no longer used. index.html is now the login page. I will remove unneeded files later.
