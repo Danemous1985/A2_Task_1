@@ -1,0 +1,91 @@
+Expanded Proposal for Assignment 3
+
+Motivation:
+The purpose of this project is to create an artist-centric social media platform 
+that allows users to show their portfolios, manage posts, and interact with clients. 
+I intend the project to be user friendly, scalable, and efficient by different AWS 
+services to manage, user data, media, and the program itself. By using AWS services, 
+I can help ensure, scalability, and ease of use. One major change from the original 
+proposal is the switch from using AWS RDS to DynamoDB to store data, which allows 
+for more flexible data management, automatic scaling, and better cost management.
+
+Objective:
+Create a fully functional platform where artists can register an account, manage 
+folios, post updates, and communicate with clients. The platform will use different 
+AWS services to host and manage both the frontend and backend of the application. 
+Users will be able to upload and manage portfolios, create posts, and communicate 
+with clients.
+
+Components:
+
+Flask Application (Backend Logic)
+The Flask framework will be used to handle backend logic, such as routing, API 
+management, and session handling. Flask will manage user registration, login, posts, 
+portfolio management, and different endpoints. The application will be hosted on AWS 
+Elastic Beanstalk, to help simplify deployment by handling scaling, and monitoring.
+
+AWS Elastic Beanstalk
+Elastic Beanstalk will be used to deploy the app, handling load balancing, scaling, 
+and program management. This will allow me to focus to remain on development, while 
+Elastic Beanstalk handles the infrastructure. The goal is to ensure the app remains 
+highly available and can handle changes in traffic.
+
+AWS DynamoDB (Replacing RDS)
+Instead of using AWS RDS, user data (registration, posts, messages, and portfolio 
+data) will be stored in AWS DynamoDB. DynamoDB provides good scaling, flexible data 
+structure, and faster read/write speeds compared to traditional relational databases 
+according to research. This benefits for managing user-generated content and data, 
+since schema can be dynamic. By replacing RDS, I can avoid managing relational 
+schemas and gain benefits of serverless architecture, further simplifying management 
+and allowing more development. After doing dynamoDB tasks in Task 1 of Assignment 2, 
+I do think dynamoDB will be more useful for my Assignment 3 project.
+
+AWS S3 (Simple Storage Service)
+AWS S3 will be used for storing images and media files for user folios. When 
+designers upload their folios, the media files (like images) will be stored in S3 
+buckets. This is good for scalability of media storage, while also integrating with 
+other AWS services like Lambda for processing and resizing images before storage.
+
+AWS Lambda
+AWS Lambda can be used for automating tasks such as resizing images before they are 
+uploaded to S3. When a designer uploads a new image, a Lambda function will trigger, 
+resize the image, and store it in the S3 bucket. This reduces the size of stored 
+media and improves performance when users load the images. I may also utilize AWS 
+Lambda during development for other purposes, such as user account creation for 
+example.
+
+AWS API Gateway
+API Gateway will expose the Flask application’s API endpoints, letting users to 
+interact with the platform. It provides a way to handle incoming API requests, 
+scalability, monitoring, and easy routing. By using API Gateway, my project will be 
+more flexible in managing traffic and monitoring API use.
+
+DynamoDB for User Subscriptions and data
+DynamoDB will store key application data such as user subscriptions, designer folios, 
+and posts. DynamoDB's NoSQL structure is good for handling the different and 
+sometimes unstructured data that comes from user generated content. It also lets me 
+simplify application logic, as DynamoDB can handle complex data structures more 
+flexibly than RDS.
+
+Social media API
+I may integrate some social media API's, such as Twitter and Facebook to allow users 
+to perhaps share their social media's, or for clients to be able to follow them on 
+other platforms.
+
+Solution Architecture
+The overall architecture will include:
+
+Elastic Beanstalk to host and deploy the Flask application.
+DynamoDB for user and application data.
+S3 for media storage.
+API Gateway to expose the API endpoints.
+Lambda for image processing and email notifications. The architecture will be 
+designed to help with scalability, and flexibility by using AWS service that 
+integrate with one another.
+Conclusion:
+By transitioning from RDS to DynamoDB, I simplify data management while maintaining 
+the other AWS components, such as S3 for media storage, Elastic Beanstalk for 
+deployment, and API Gateway for routing. This change helps flexibility in handling 
+user data while making sure the scalability of the project stays efficient. Overall, 
+my main changes are the database change to dynamoDB, and will likely utilize Lamdba 
+more to trigger certain events when necessary.

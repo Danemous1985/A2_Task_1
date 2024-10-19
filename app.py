@@ -1,29 +1,46 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import boto3
 from boto3.dynamodb.conditions import Attr
+import configparser
 
 app = Flask(__name__)
 app.secret_key = 'my_key'
 
 """
 NOTE FOR TUTOR:
-The credentials below are temporary. I'm having some issue with credentials. Have read alot and seems for some reason, Flask is not detecting the aws credentials file in my EC2 instance. Not sure why. Some reading suggest it may be some problem relating with Flask and using AWS Learner lab permissions limitations. I'm going to try different method soon to try fix this. For right now though, I need to insert the AWS session credentials programatically, not too different from usual anyway. It's just needed for dynamoDB and S3 right now.
+I'm having some issue with credentials. Have read alot and seems for some reason, Flask is not detecting the aws credentials file in my EC2 instance. Not sure why. Some reading suggest it may be some problem relating with Flask and using AWS Learner lab permissions limitations, but also related to boto3 possibly (needed to itneract with dynamo). At first I had to hardcode my credentials into my app.py, but i know that isnt good practice. Usually, it should pick up the aws credentials in the EC2 instance, but it isn't doing that. I had to make this function manually to retrieve the credentials and load them in. The function is basically doing what should be happening by default but some reason is not detecting it. This method is functioning now though. Is better than hardcoding credentials into the program for sure.
 """
+def load_aws_credentials():
+    credentials_path = '/home/ubuntu/.aws/credentials'
+    config = configparser.ConfigParser()
+    config.read(credentials_path)
+
+    aws_access_key_id = config.get('default', 'aws_access_key_id')
+    aws_secret_access_key = config.get('default', 'aws_secret_access_key')
+    aws_session_token = config.get('default', 'aws_session_token', fallback=None)
+    
+    return aws_access_key_id, aws_secret_access_key, aws_session_token
+
+# load credentials
+aws_access_key_id, aws_secret_access_key, aws_session_token = load_aws_credentials()
+
+# create dynamoDB and S3 clients with loaded credentials
 dynamodb = boto3.resource(
     'dynamodb',
     region_name='us-east-1',
-    aws_access_key_id='ASIASSPVW4E4PBJYURYQ',
-    aws_secret_access_key='CnueBha8Vc2n946wymnn6Xt2r1GuO8a/QWLjvXTO',
-    aws_session_token='IQoJb3JpZ2luX2VjEK///////////wEaCXVzLXdlc3QtMiJGMEQCIHZfTVDSVK8Q8XjIDnid+NgKIlRUPr6viyvK2zsY3rmHAiBC6mjJ2kToLZK3u/fxXf7S1A/IftCgJgxxOCj7JMStgCqmAggXEAAaDDE3NzE0NTgzMTczNiIMVQT/Vx4JEB4Yb9C+KoMC1mUJt/ciOgvAAdD9F9TMKLx1/j/YDl7L/b0WMjo5q6DntP9vm4BKRYF34I3eoI652xNpC4EsUhQRD4ec/BGpHd6cd1n+JTm6IcS5iOO5xvmxNFmhsPRHg4FuMnj9tIcIHdTY2ZmgxpnE4MWCjtCw1nb7oqzBiReFFxiPs0+MmNmxsYKL0l42IhVEmCFCEePOLvosRL7hgjMRVt+ZQuO1zSdCrix0Vw7Y9ULIX8faYzEOZKupTXWjJH4SfwdiZ66lD4F3zQtTR0/DUis5PS0JoeGTZOEC6eGYyeiwq4lODYxmNGGhsP+KxHqIuWsuMxeMkPxDhmcWH3FNt4ksqxpSLR68FzDBlr+4BjqeATNzCD5pq8yqJ36lbmEnIalNuQFI1JGfgd+bd0uNG82StbAOuokI/M6eNkSG54+e+sON/QB/xiFLP3AQ6fib0dBOexBICVfXX4EoVIjeHiNIdQ2L5OlJWCVIy8eDKi/8AhM2XHBGAGFTEeoCP/Yicxf4XDKtHvvMvFJSOgaG3Bijn2Licxwv5dVMR/cQCSwOmSyPa3ATlnWtQ+C/LyTu'
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    aws_session_token=aws_session_token
 )
 
 s3 = boto3.client(
     's3',
     region_name='us-east-1',
-    aws_access_key_id='ASIASSPVW4E4PBJYURYQ',
-    aws_secret_access_key='CnueBha8Vc2n946wymnn6Xt2r1GuO8a/QWLjvXTO',
-    aws_session_token='IQoJb3JpZ2luX2VjEK///////////wEaCXVzLXdlc3QtMiJGMEQCIHZfTVDSVK8Q8XjIDnid+NgKIlRUPr6viyvK2zsY3rmHAiBC6mjJ2kToLZK3u/fxXf7S1A/IftCgJgxxOCj7JMStgCqmAggXEAAaDDE3NzE0NTgzMTczNiIMVQT/Vx4JEB4Yb9C+KoMC1mUJt/ciOgvAAdD9F9TMKLx1/j/YDl7L/b0WMjo5q6DntP9vm4BKRYF34I3eoI652xNpC4EsUhQRD4ec/BGpHd6cd1n+JTm6IcS5iOO5xvmxNFmhsPRHg4FuMnj9tIcIHdTY2ZmgxpnE4MWCjtCw1nb7oqzBiReFFxiPs0+MmNmxsYKL0l42IhVEmCFCEePOLvosRL7hgjMRVt+ZQuO1zSdCrix0Vw7Y9ULIX8faYzEOZKupTXWjJH4SfwdiZ66lD4F3zQtTR0/DUis5PS0JoeGTZOEC6eGYyeiwq4lODYxmNGGhsP+KxHqIuWsuMxeMkPxDhmcWH3FNt4ksqxpSLR68FzDBlr+4BjqeATNzCD5pq8yqJ36lbmEnIalNuQFI1JGfgd+bd0uNG82StbAOuokI/M6eNkSG54+e+sON/QB/xiFLP3AQ6fib0dBOexBICVfXX4EoVIjeHiNIdQ2L5OlJWCVIy8eDKi/8AhM2XHBGAGFTEeoCP/Yicxf4XDKtHvvMvFJSOgaG3Bijn2Licxwv5dVMR/cQCSwOmSyPa3ATlnWtQ+C/LyTu'
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    aws_session_token=aws_session_token
 )
+
 
 
 # s3 = boto3.client('s3', region_name='us-east-1')
